@@ -1,0 +1,23 @@
+{
+  "name": "image-gallery",
+  "version": "0.0.1",
+  "authors": [
+    "JacopoDaeli <jacopo.daeli@gmail.com>"
+  ],
+  "description": "Image Gallery package",
+  "main": "main.js",
+  "moduleType": [
+    "es6",
+    "node"
+  ],
+  "keywords": [
+    "clever",
+    "clever-core",
+    "clever-cli",
+    "image",
+    "gallery"
+  ],
+  "license": "MIT",
+  "dependencies": {
+  }
+}
