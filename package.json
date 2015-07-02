@@ -8,6 +8,7 @@
   "clever": "0.0.x",
   "visible": true,
   "dependencies": {
+    "bubble-sort-js": "0.0.2"
   },
   "devDependencies": {},
   "license": "MIT"
