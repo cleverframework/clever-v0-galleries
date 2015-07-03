@@ -4,13 +4,13 @@ let cleverCore = require('clever-core');
 let Package = cleverCore.Package;
 
 // Defining the Package
-var ImageGalleryPackage = new Package('users-ssh');
+var ImageGalleriesPackage = new Package('users-ssh');
 
 // All CLEVER packages require registration
-ImageGalleryPackage.register(function(app, auth, database, storage) {
+ImageGalleriesPackage.register(function(app, auth, database, storage) {
 
-  ImageGalleryPackage.routes(app, auth, database, storage);
+  ImageGalleriesPackage.routes(app, auth, database, storage);
 
-  return ImageGalleryPackage;
+  return ImageGalleriesPackage;
 
 });
