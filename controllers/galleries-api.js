@@ -2,56 +2,51 @@
 
 // Module dependencies.
 const mongoose = require('mongoose');
-const User = mongoose.model('User');
+const Gallery = mongoose.model('Gallery');
 const async = require('async');
 const config = require('clever-core').loadConfig();
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const util = require('../util');
 
-// Send logged user
+// Send logged gallery
 exports.me = function(req, res) {
-  util.sendObjectAsHttpResponse(res, 200, req.user || null);
+  util.sendObjectAsHttpResponse(res, 200, req.gallery || null);
 };
 
-// Find all user
-exports.getUsers = function(req, res, next) {
-  User.getUsers(req.query.start, req.query.limit)
+// Find all gallery
+exports.getGalleries = function(req, res, next) {
+  Gallery.getGalleries(req.query.start, req.query.limit)
     .then(util.sendObjectAsHttpResponse.bind(null, res, 200))
     .catch(util.passNext.bind(null, next));
 };
 
-// Find user by id
-exports.getUserById = function(req, res, next) {
-  User.getUserById(req.params.id)
+// Find gallery by id
+exports.getGalleryById = function(req, res, next) {
+  Gallery.getGalleryById(req.params.id)
     .then(util.sendObjectAsHttpResponse.bind(null, res, 200))
     .catch(util.passNext.bind(null, next));
 };
 
-// Create user
-exports.createUser = function(req, res, next) {
+// Create gallery
+exports.createGallery = function(req, res, next) {
 
-  // because we set our user.provider to local our models/user.js validation will always be true
-  req.assert('firstName', 'You must enter your first name').notEmpty();
-  req.assert('lastName', 'You must enter your last name').notEmpty();
-  req.assert('firstName', 'Firstname cannot be more than 32 characters').len(1, 32);
-  req.assert('lastName', 'Lastname cannot be more than 32 characters').len(1, 32);
-  req.assert('email', 'You must enter a valid email address').isEmail();
-  req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
-  // req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('title', 'Gallery must have a title of not more then 32 characters').notEmpty().len(1, 32);
+  req.assert('slug', 'Gallery must have a slug of not more then 32 characters').notEmpty().len(1, 32);
+  req.assert('comment', 'Comment must have max 64 characters').optional().len(0, 64);
 
   const errors = req.validationErrors();
   if (errors) {
     return res.status(400).json(errors);
   }
 
-  User.createUser(req.body)
+  Gallery.createGallery(req.body)
     .then(util.sendObjectAsHttpResponse.bind(null, res, 201))
     .catch(util.sendObjectAsHttpResponse.bind(null, res, 400));
 };
 
-// Edit user logged user id
-exports.editUserById = function(req, res, next) {
+// Edit gallery logged gallery id
+exports.editGalleryById = function(req, res, next) {
 
   // Optionals
   req.assert('firstName', 'You must enter your first name').optional().notEmpty();
@@ -66,28 +61,28 @@ exports.editUserById = function(req, res, next) {
     return res.status(400).json(errors);
   }
 
-  User.editUserById(req.params.id, req.body)
+  Gallery.editGalleryById(req.params.id, req.body)
     .then(util.sendObjectAsHttpResponse.bind(null, res, 202))
     .catch(util.sendObjectAsHttpResponse.bind(null, res, 400));
 };
 
-// Edit logged user
-exports.editLoggedUser = function(req, res, next) {
+// Edit logged gallery
+exports.editLoggedGallery = function(req, res, next) {
   if(!req.isAuthenticated()) {
     return res.status(401).json([{
-      message: 'User Unauthorized',
+      message: 'Gallery Unauthorized',
       status: 401
     }]);
   }
 
-  req.params.id = req.user._id;
-  req.body.admin = req.user.isAdmin();
-  exports.editUserById(req, res, next);
+  req.params.id = req.gallery._id;
+  req.body.admin = req.gallery.isAdmin();
+  exports.editGalleryById(req, res, next);
 };
 
-// Delete user by id
-exports.deleteUserById = function(req, res, next) {
-  User.deleteUserById(req.params.id)
+// Delete gallery by id
+exports.deleteGalleryById = function(req, res, next) {
+  Gallery.deleteGalleryById(req.params.id)
     .then(util.sendObjectAsHttpResponse.bind(null, res, 202))
     .catch(util.passNext.bind(null, next));
 };

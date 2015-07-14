@@ -29,8 +29,8 @@ module.exports = function(ImageGalleriesPackage, app, auth, database, storage) {
   // router.get('/:slug', galleriesApiCtrl.getGalleryBySlug);
   //
   // // Create new gallery
-  // router.post('/', auth.requiresAdmin, galleriesApiCtrl.createGallery);
-  //
+  router.post('/', auth.requiresAdmin, galleriesApiCtrl.createGallery);
+
   // // Edit gallery
   // router.put('/:id', auth.requiresAdmin, galleriesApiCtrl.editGalleryById);
   //

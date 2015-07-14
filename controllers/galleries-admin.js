@@ -8,27 +8,41 @@ const async = require('async');
 const util = require('../util');
 
 // Show gallery list
-  exports.showGalleries = function(ImageGalleriesPackage, req, res, next) {
+  exports.showGalleries = function(GalleriesPackage, req, res, next) {
   let page = Number.parseInt(req.query.page);
   page = Number.isNaN(page) ? 0 : page;
   const skip = page * 10;
 
   function renderGalleryList(galleries, nGalleries) {
-    res.send(ImageGalleriesPackage.render('admin/gallery/list', {
-      packages: ImageGalleriesPackage.getCleverCore().getInstance().exportablePkgList,
-      user: req.user,
-      galleries: galleries,
-      nGalleries: nGalleries,
-      activePage: page,
-      csrfToken: req.csrfToken()
-    }));
+    console.log('Rendering galleries...');
+    try {
+      res.send(GalleriesPackage.render('admin/gallery/list', {
+        packages: GalleriesPackage.getCleverCore().getInstance().exportablePkgList,
+        user: req.user,
+        galleries: galleries,
+        nGalleries: nGalleries,
+        activePage: page,
+        csrfToken: req.csrfToken()
+      }));
+    } catch (e) {
+      next(e);
+    }
   }
 
   async.parallel([
     function getGalleries(cb){
       Gallery.getGalleries(skip, 10)
         .then(function(galleries) {
-          cb(null, galleries);
+          async.each(galleries, function(gallery, done) {
+            gallery.loadImagePreview()
+              .then(function() {
+                done();
+              })
+              .catch(done);
+          }, function(err) {
+            if(err) return cb(err);
+            cb(null, galleries);
+          });
         })
         .catch(util.passNext.bind(null, cb));
     },
@@ -46,10 +60,10 @@ const util = require('../util');
 
 };
 
-exports.showGallery = function(ImageGalleriesPackage, req, res, next) {
+exports.showGallery = function(GalleriesPackage, req, res, next) {
   function render(galleryToShow) {
-    res.send(ImageGalleriesPackage.render('admin/gallery/details', {
-      packages: ImageGalleriesPackage.getCleverCore().getInstance().exportablePkgList,
+    res.send(GalleriesPackage.render('admin/gallery/details', {
+      packages: GalleriesPackage.getCleverCore().getInstance().exportablePkgList,
       user: req.user,
       galleryToShow: galleryToShow,
       csrfToken: req.csrfToken()
@@ -61,18 +75,18 @@ exports.showGallery = function(ImageGalleriesPackage, req, res, next) {
     .catch(util.passNext.bind(null, next));
 };
 
-exports.createGallery = function(ImageGalleriesPackage, req, res, next) {
-  res.send(ImageGalleriesPackage.render('admin/gallery/create', {
-    packages: ImageGalleriesPackage.getCleverCore().getInstance().exportablePkgList,
+exports.createGallery = function(GalleriesPackage, req, res, next) {
+  res.send(GalleriesPackage.render('admin/gallery/create', {
+    packages: GalleriesPackage.getCleverCore().getInstance().exportablePkgList,
     user: req.user,
     csrfToken: req.csrfToken()
   }));
 };
 
-exports.editGallery = function(ImageGalleriesPackage, req, res, next) {
+exports.editGallery = function(GalleriesPackage, req, res, next) {
   function render(galleryToEdit) {
-    res.send(ImageGalleriesPackage.render(`admin/gallery/edit`, {
-      packages: ImageGalleriesPackage.getCleverCore().getInstance().exportablePkgList,
+    res.send(GalleriesPackage.render(`admin/gallery/edit`, {
+      packages: GalleriesPackage.getCleverCore().getInstance().exportablePkgList,
       user: req.user,
       galleryToEdit: galleryToEdit,
       csrfToken: req.csrfToken()

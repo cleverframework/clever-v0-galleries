@@ -89,16 +89,29 @@ const GallerySchema = new Schema({
     required: true,
     get: escapeProperty
   },
-  private: {
-    type: Boolean,
-    required: true,
-    default: false
+  comment: {
+    type: String,
+    default: '',
+    get: escapeProperty
   },
   _images: {
     type: [ImageSchema],
-    required: true,
     default: []
-  },
+  }
+});
+
+// Virtuals
+GallerySchema.virtual('image_preview').set(function(url) {
+  throw new Error('Gallery::image_preview cannot be set.');
+}).get(function() {
+  if(this._images.length === 0) return false;
+  return this._image_preview || false;
+});
+
+GallerySchema.virtual('n_images').set(function(url) {
+  throw new Error('Gallery::n_images cannot be set.');
+}).get(function() {
+  return this._images.length
 });
 
 // Pre-save hook
@@ -266,23 +279,49 @@ GallerySchema.statics = {
 GallerySchema.methods = {
 
   /**
-   * LoadImages - loadImages from _images
+   * LoadImagePreview
    *
-   * @param {String} plainText
-   * @return {Boolean}
+   * @return {Boolean|Object}
    * @api public
    */
-  loadImages: function(role) {
-    const GalleryImage = mongoose.model('GalleryImage');
+  loadImagePreview: function() {
+    const File = mongoose.model('File');
     const defer = Q.defer();
-    const orders = [];
+    const self = this;
+
+    if(this._images.length === 0) {
+      // Return false if no image into the gallery yet
+      defer.resolve(false);
+    } else {
+      // Order images
+      bubblesort(this._images, function(a, b) { return a.order - b.order; });
+
+      File.getFileById(this._images[0].ref)
+        .then(function(image) {
+          self._image_preview = image.url;
+          defer.resolve(image);
+        })
+        .catch(defer.reject);
+    }
+
+    return defer.promise;
+  },
+
+  /**
+   * LoadImages - loadImages from _images
+   *
+   * @return {Array}
+   * @api public
+   */
+  loadImages: function() {
+    const File = mongoose.model('File');
+    const defer = Q.defer();
 
     // Order images
     bubblesort(this._images, function(a, b) { return a.order - b.order; });
 
     async.map(this._images, function(_image, cb) {
-      orders.push(_image.order);
-      GalleryImage.getImageById(_image.ref)
+      File.getImageById(_image.ref)
         .then(function(image) {
           cb(null, image);
         })

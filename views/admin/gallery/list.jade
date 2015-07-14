@@ -1,0 +1,100 @@
+extends ../../../../system/views/admin/layout/admin
+
+block appendcss
+  link(rel='stylesheet', href='/public/system/admin/index.css')
+  
+block content
+    
+  h1.page-header
+    | Galleries: 
+    span(style="color: #666") List
+    div.row.placeholders
+  
+  table.table.table-hover
+    thead
+      tr
+        th
+          | 
+        th
+          | Title
+        th
+          | Slug
+        th
+          | Comment
+        th
+          | N° Images
+        th
+          | 
+    tbody
+      each gallery in galleries
+        tr
+          td
+            a(href="/admin/galleries/#{gallery._id}")
+              if gallery.image_preview
+                img(src="#{gallery.image_preview}", width="35", height="35")
+              else 
+                i.fa.fa-picture-o.fa-3x
+          td
+            a(href="/admin/galleries/#{gallery._id}")
+              | #{gallery.title}
+          td
+            | #{gallery.slug}
+          td
+            | #{gallery.comment}
+          td
+            | #{gallery.n_images}  
+          td
+            .btn-group
+                button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-expanded="false")
+                  | Modify 
+                  span.caret
+                |   
+                ul.dropdown-menu(role="menu")
+                  li
+                    a(href="/admin/galleries/#{gallery._id}/edit") Add images
+                  li
+                    a(href="/admin/galleries/#{gallery._id}/edit") Edit
+                  li
+                    a.deleteGallery(href="#", data-id="#{gallery._id}") Delete
+
+    tfoot
+      tr
+        th
+          | 
+        th
+          | Title
+        th
+          | Slug
+        th
+          | Comment
+        th
+          | N° Images
+        th
+          | 
+          
+  a(href="/admin/galleries/create").btn.btn-primary Create
+  
+  - var nPages = Math.ceil(nGalleries / 10);
+  - var i = 0;
+  
+  if nPages > 0
+    nav.pull-right
+      ul.pagination
+        li(class=(activePage == 0) ? 'disabled' : '')
+          a(href="/admin/galleries/#{activePage-1}", aria-label="Previous")
+            span(aria-hidden="true") &laquo;
+            
+        while i < nPages   
+          li(class=(i == activePage) ? 'active' : '')
+            a(href="/admin/galleries?page=#{i}")
+              | #{++i} 
+                
+        li(class=(activePage < nPages-1) ? '' : 'disabled')
+          a(href="/admin/galleries/#{activePage+1}", aria-label="Next")
+            span(aria-hidden="true") &raquo;        
+              
+block appendjs
+  script.
+    window.urlreload = -1;
+    window.csrf = '#{csrfToken}';
+  script(src="/public/galleries/admin/index.js")

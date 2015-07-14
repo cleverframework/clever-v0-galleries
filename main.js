@@ -11,6 +11,6 @@ GalleriesPackage.register(function(app, auth, database, storage) {
 
   GalleriesPackage.routes(app, auth, database, storage);
 
-  return ImageGalleriesPackage;
+  return GalleriesPackage;
 
 });

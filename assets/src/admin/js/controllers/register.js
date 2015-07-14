@@ -10,16 +10,23 @@ export default (app) => {
     app.emit(eventName, this);
   }
 
-  $('.deleteUser').click(function(e) {
-    callListener.call(this, e, 'deleteUser');
+  $('.deleteGallery').click(function(e) {
+    callListener.call(this, e, 'deleteGallery');
   });
 
-  $('#createUser').submit(function(e) {
-    callListener.call(this, e, 'createUser');
+  $('#createGallery').submit(function(e) {
+    callListener.call(this, e, 'createGallery');
   });
 
-  $('#editUser').submit(function(e) {
-    callListener.call(this, e, 'editUser');
+  $('#editGallery').submit(function(e) {
+    callListener.call(this, e, 'editGallery');
+  });
+
+  $('#inputTitle').bind('keyup mouseup', function(e) {
+    let replaced = $(this).val().replace(/ /g,'-');
+    replaced = replaced.replace(/'/g,'-');
+    replaced = replaced.replace(/[&\/\\#,+()$~%.":*?!`|<>{}]/g,'');
+    $('#inputSlug').val(replaced.toLowerCase());
   });
 
   return app;

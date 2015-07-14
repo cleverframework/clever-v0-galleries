@@ -9,7 +9,7 @@ export default (app) => {
         location.href = `${options.urlCallback}/${data._id}`;
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        // Show the errors to the user
+        // Show the errors to the gallery
         options.$errorMessage.html(`${jqXHR.responseJSON[0].msg}.`);
         options.$error.removeClass('hidden');
 
@@ -23,64 +23,64 @@ export default (app) => {
     console.log(`${app.config.name} started`);
   });
 
-  app.on('createUser', (form) => {
+  app.on('createGallery', (form) => {
 
-    const $createUserError = $('#createUserError');
-    const $createUserBtn = $('#createUserBtn');
+    const $createGalleryError = $('#createGalleryError');
+    const $createGalleryBtn = $('#createGalleryBtn');
     const options = {
       formURL: $(form).attr('action'),
       method: $(form).attr('method'),
       postData: $(form).serialize(),
-      urlCallback: '/admin/users',
-      $error: $createUserError,
-      $errorMessage: $('#createUserError .message'),
-      $btn: $createUserBtn
+      urlCallback: '/admin/galleries',
+      $error: $createGalleryError,
+      $errorMessage: $('#createGalleryError .message'),
+      $btn: $createGalleryBtn
     }
 
     // Clear the error message div
-    $createUserError.addClass('hidden');
+    $createGalleryError.addClass('hidden');
 
     // Send Ajax
     sendDataAjax(options);
 
     // Disable the submit form button
-    $createUserBtn.addClass('disabled');
+    $createGalleryBtn.addClass('disabled');
 
   });
 
-  app.on('editUser', (form) => {
+  app.on('editGallery', (form) => {
 
-    const $editUserError = $('#editUserError');
-    const $editUserBtn = $('#editUserBtn');
+    const $editGalleryError = $('#editGalleryError');
+    const $editGalleryBtn = $('#editGalleryBtn');
     const options = {
       formURL: $(form).attr('action'),
       method: $(form).attr('method'),
       postData: $(form).serialize(),
-      urlCallback: '/admin/users',
-      $error: $editUserError,
-      $errorMessage: $('#editUserError .message'),
-      $btn: $editUserBtn
+      urlCallback: '/admin/galleries',
+      $error: $editGalleryError,
+      $errorMessage: $('#editGalleryError .message'),
+      $btn: $editGalleryBtn
     }
 
     // Clear the error message div
-    $editUserError.addClass('hidden');
+    $editGalleryError.addClass('hidden');
 
     // Send Ajax
     sendDataAjax(options);
 
     // Disable the submit form button
-    $editUserBtn.addClass('disabled');
+    $editGalleryBtn.addClass('disabled');
 
   });
 
-  app.on('deleteUser', (btn) => {
+  app.on('deleteGallery', (btn) => {
 
-    if(!confirm('Are you sure to want delete this user?')) return false;
+    if(!confirm('Are you sure to want delete this gallery?')) return false;
 
     const $btn = $(btn);
 
     const request = $.ajax({
-      url: `/api/users/${$btn.data('id')}`,
+      url: `/api/galleries/${$btn.data('id')}`,
       beforeSend: function (request) {
         request.setRequestHeader('csrf-token', window.csrf);
       },

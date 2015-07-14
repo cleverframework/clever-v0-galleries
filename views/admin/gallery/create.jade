@@ -1,0 +1,30 @@
+extends ../../../../system/views/admin/layout/admin
+
+block content
+  h1.page-header
+    | Galleries: 
+    span(style="color: #666") Create
+    div.row.placeholders
+  form#createGallery.col-sm-8(method="POST", action="/api/galleries", autocomplete="off")
+    .form-group
+      label(for="inputTitle") Title
+      input#inputTitle.form-control(type="text", name="title", value="", placeholder="Title (max 32 characters)", maxlength="32")
+    .form-group
+      label(for="inputSlug") Slug
+      input#inputSlug.form-control(type="text", name="slug", value="", placeholder="Slug (max 32 characters)", maxlength="32")
+    .form-group
+      label(for="inputComment") Comment 
+      input#inputComment.form-control(type="text", name="comment", value="", placeholder="Comment (max 64 characters)", maxlength="128")
+    input(type="hidden", name="_csrf", value="#{csrfToken}")
+    a.btn.btn-default(href="/admin/galleries", style="margin-right: 5px;") Cancel
+    button#createGalleryBtn.btn.btn-success(type="submit") Create
+    br
+    br
+    div#createGalleryError(class="alert alert-danger hidden", role="alert")
+      b
+        |	Ops! 
+      span.message
+        | No Errors
+
+block appendjs
+  script(src="/public/galleries/admin/index.js")
