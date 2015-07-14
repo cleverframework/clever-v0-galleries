@@ -1,2 +1,2 @@
-# clever-image-galleries
-Image Galleries module for CLEVER.
+# clever-galleries
+Galleries module for CLEVER.
