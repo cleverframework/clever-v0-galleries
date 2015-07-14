@@ -2,33 +2,44 @@ extends ../../../system/views/admin/layout/admin
 
 block content
   h1.page-header
-    | Users: 
-    span(style="color: #666") #{userToShow.firstName} #{userToShow.lastName} [Details]
+    | Files: 
+    span(style="color: #666") #{fileToShow.title} [Details]
     div.row.placeholders
-  form#editUser.col-sm-8(autocomplete="off")
+  form#editFile.col-sm-8(autocomplete="off")
     .form-group
-        label(for="inputFirstName") First Name
-        |     
-        input#inputFirstName.form-control(type="text", name="firstName", value="#{userToShow.firstName}", placeholder="Firstname", disabled)
-      |  
+      label(for="inputTitle") Title
+      |     
+      input#inputTitle.form-control(type="text", name="title", value="#{fileToShow.title}", placeholder="Title", disabled)
     .form-group
-        label(for="inputLastname") Last Name
-        |     
-        input#inputLastname.form-control(type="text", name="lastName", value="#{userToShow.lastName}", placeholder="Lastname", disabled)
-      |  
+      label(for="inputDescription") Description
+      |     
+      textarea#inputDescription.form-control(name="description", placeholder="", disabled) #{fileToShow.description}
+    | 
     .form-group
-        label(for="inputEmail") Email address
-        |     
-        input#inputEmail.form-control(type="email", name="email", value="#{userToShow.email}", placeholder="Email address", disabled)
-      |   
+      label(for="inputTitle") Size (bytes)
+      |     
+      input#inputTitle.form-control(type="text", name="size", value="#{fileToShow.size}", placeholder="Size", disabled)  
+    .form-group
+      label(for="inputTitle") Type
+      |     
+      input#inputTitle.form-control(type="text", name="mimetype", value="#{fileToShow.mimetype}", placeholder="Mimetype", disabled)  
+    .form-group
+      label(for="inputTitle") Created
+      |     
+      input#inputTitle.form-control(type="text", name="created", value="#{fileToShow.created}", placeholder="Created", disabled)  
+    .form-group
+      label(for="inputTitle") Modified
+      |     
+      input#inputTitle.form-control(type="text", name="modified", value="#{fileToShow.created}", placeholder="Modified", disabled)  
     .checkbox
       label
-        if userToShow.roles.indexOf('admin') > -1
-          input(type="checkbox", name="admin", value="1", checked, disabled)
+        if fileToShow.private
+          input(type="checkbox", name="private", value="1", checked, disabled)
         else 
-          input(type="checkbox", name="admin", value="1", disabled)
-        |  Admin
-    a.btn.btn-default(href="/admin/users", style="margin-right: 5px;") &laquo;
+          input(type="checkbox", name="private", value="1", disabled)
+        |  Private
+      
+    a.btn.btn-default(href="/admin/files", style="margin-right: 5px;") &laquo;
     .btn-group
         button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-expanded="false")
           | Modify 
@@ -36,16 +47,17 @@ block content
         |   
         ul.dropdown-menu(role="menu")
           li
-            a(href="/admin/users/#{userToShow._id}/edit") Edit
+            a(href="/admin/files/#{fileToShow._id}/edit") Edit
           | 
           li
-            a(href="/admin/users/#{userToShow._id}/edit/change-password") Change Password
-          |     
-          li
-            a.deleteUser(href="#", data-id="#{userToShow._id}") Delete
+            a.deleteFile(href="#", data-id="#{fileToShow._id}") Delete
 
 block appendjs
   script.
     window.csrf = '#{csrfToken}';
-    window.urlreload = '/admin/users';
-  script(src="/public/users/admin/index.js")
+    window.urlreload = '/admin/files';
+  script(src="/public/files/vendor/jquery-ui/jquery-ui.min.js")
+  script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.iframe-transport.js")
+  script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.fileupload.js")
+  script(src="/public/files/vendor/cropper/dist/cropper.min.js")
+  script(src="/public/files/admin/index.js")

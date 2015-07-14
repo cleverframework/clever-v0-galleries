@@ -70,7 +70,7 @@ const ImageSchema = new Schema({
     required: true
   },
   order: {
-    type: Integer,
+    type: Number,
     required: true,
   }
 });
@@ -127,8 +127,8 @@ GallerySchema.statics = {
   /**
    * GetGalleries - return the list of galleries
    *
-   * @param {Integer} skip
-   * @param {Integer} limit
+   * @param {Number} skip
+   * @param {Number} limit
    * @return {Object}
    * @api public
    */

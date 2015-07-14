@@ -1,16 +1,16 @@
 'use strict';
 
-let cleverCore = require('clever-core');
-let Package = cleverCore.Package;
+const cleverCore = require('clever-core');
+const Package = cleverCore.Package;
 
 // Defining the Package
-// var ImageGalleriesPackage = new Package('image-galleries');
+const GalleriesPackage = new Package('galleries');
 
 // All CLEVER packages require registration
-// ImageGalleriesPackage.register(function(app, auth, database, storage) {
-//
-//   ImageGalleriesPackage.routes(app, auth, database, storage);
-//
-//   return ImageGalleriesPackage;
-//
-// });
+GalleriesPackage.register(function(app, auth, database, storage) {
+
+  ImageGalleriesPackage.routes(app, auth, database, storage);
+
+  return ImageGalleriesPackage;
+
+});

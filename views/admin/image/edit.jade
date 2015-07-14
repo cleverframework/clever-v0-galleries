@@ -2,43 +2,43 @@ extends ../../../system/views/admin/layout/admin
 
 block content
   h1.page-header
-    | Users: 
-    span(style="color: #666") #{userToEdit.firstName} #{userToEdit.lastName} [Edit]
+    | Files: 
+    span(style="color: #666") #{fileToEdit.title} [Details]
     div.row.placeholders
-  form#editUser.col-sm-8(method="PUT", action="/api/users/#{userToEdit._id}", autocomplete="off")
+  form#editFile.col-sm-8(method="PUT", action="/api/files/#{fileToEdit._id}", autocomplete="off")
     .form-group
-        label(for="inputFirstName") First Name
-        |     
-        input#inputFirstName.form-control(type="text", name="firstName", value="#{userToEdit.firstName}", placeholder="Firstname")
-      |  
+      label(for="inputTitle") Title
+      |     
+      input#inputTitle.form-control(type="text", name="title", value="#{fileToEdit.title}", placeholder="Title")
     .form-group
-        label(for="inputLastname") Last Name
-        |     
-        input#inputLastname.form-control(type="text", name="lastName", value="#{userToEdit.lastName}", placeholder="Lastname")
-      |  
-    .form-group
-        label(for="inputEmail") Email address
-        |     
-        input#inputEmail.form-control(type="email", name="email", value="#{userToEdit.email}", placeholder="Email address")
-      |   
+      label(for="inputDescription") Description
+      |     
+      textarea#inputDescription.form-control(name="description", placeholder="Write a description here if you fancy") #{fileToEdit.description}
     .checkbox
       label
-        if userToEdit.roles.indexOf('admin') > -1
-          input(type="checkbox", name="admin", value="1", checked)
+        if fileToEdit.private
+          input(type="checkbox", name="private", value="1", checked)
         else 
-          input(type="checkbox", name="admin", value="1")
-        |  Admin
+          input(type="checkbox", name="private", value="1")
+        |  Private
     input(type="hidden", name="_csrf", value="#{csrfToken}")
     |   
-    a.btn.btn-default(href="/admin/users", style="margin-right: 5px;") Cancel
-    button#editUserBtn.btn.btn-success(type="submit") Save
+    a.btn.btn-default(href="/admin/files", style="margin-right: 5px;") Cancel
+    button#editFileBtn.btn.btn-success(type="submit") Save
     br
     br
-    div#editUserError(class="alert alert-danger hidden", role="alert")
+    div#editFileError(class="alert alert-danger hidden", role="alert")
       b
         |	Ops! 
       span.message
         | No Errors
 
 block appendjs
-  script(src="/public/users/admin/index.js")
+  script.
+    window.csrf = '#{csrfToken}';
+    window.urlreload = '/admin/files';
+  script(src="/public/files/vendor/jquery-ui/jquery-ui.min.js")
+  script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.iframe-transport.js")
+  script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.fileupload.js")
+  script(src="/public/files/vendor/cropper/dist/cropper.min.js")
+  script(src="/public/files/admin/index.js")

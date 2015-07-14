@@ -1,7 +1,7 @@
 {
-  "name": "image-galleries",
+  "name": "galleries",
   "version": "0.0.1",
-  "description": "Image Galleries package",
+  "description": "Galleries package",
   "author": {
     "name": "Jacopo Daeli <jacopo.daeli@gmail.com>"
   },
