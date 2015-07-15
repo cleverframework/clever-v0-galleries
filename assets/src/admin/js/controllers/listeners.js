@@ -89,6 +89,58 @@ export default (app) => {
 
     request.done(function(msg) {
       if(window.urlreload) return location.href = window.urlreload;
+      location.reload();
+    });
+
+    request.fail(function( jqXHR, textStatus ) {
+      console.error(`Request failed: ${textStatus}`);
+    });
+
+  });
+
+  app.on('editImage', (form) => {
+
+    const $editImageError = $('#editImageError');
+    const $editImageBtn = $('#editImageBtn');
+    const options = {
+      formURL: $(form).attr('action'),
+      method: $(form).attr('method'),
+      postData: $(form).serialize(),
+      urlCallback: `/admin/galleries/${window.galleryId}/images`,
+      $error: $editImageError,
+      $errorMessage: $('#editImageError .message'),
+      $btn: $editImageBtn
+    }
+
+    // Clear the error message div
+    $editImageError.addClass('hidden');
+
+    // Send Ajax
+    sendDataAjax(options);
+
+    // Disable the submit form button
+    $editImageBtn.addClass('disabled');
+
+  });
+
+  app.on('deleteImage', (btn) => {
+
+    if(!confirm('Are you sure to want delete this image?')) return false;
+
+    const $btn = $(btn);
+
+    console.log($btn.data('id'))
+
+    const request = $.ajax({
+      url: `/api/files/${$btn.data('id')}`,
+      beforeSend: function (request) {
+        request.setRequestHeader('csrf-token', window.csrf);
+      },
+      method: 'DELETE'
+    });
+
+    request.done(function(msg) {
+      location.reload();
     });
 
     request.fail(function( jqXHR, textStatus ) {

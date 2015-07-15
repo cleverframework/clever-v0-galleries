@@ -111,13 +111,9 @@ GallerySchema.virtual('image_preview').set(function(url) {
 GallerySchema.virtual('n_images').set(function(url) {
   throw new Error('Gallery::n_images cannot be set.');
 }).get(function() {
-  return this._images.length
+  return this.images ? this.images.length : 0;
 });
 
-// Pre-save hook
-GallerySchema.pre('save', function(next) {
-  next();
-});
 
 // Static Methods
 GallerySchema.statics = {
@@ -169,7 +165,7 @@ GallerySchema.statics = {
     const defer = Q.defer();
     Gallery.findOne({_id: id}, function(err, gallery) {
       if (err) return defer.reject(err);
-      return defer.resolve(gallery);
+      defer.resolve(gallery);
     });
     return defer.promise;
   },
@@ -190,7 +186,6 @@ GallerySchema.statics = {
     function save(gallery) {
 
       Object.keys(galleryParams).forEach(function (key, index) {
-        if(key==='_images') return; // handle this in a dedicated function
         gallery[key] = galleryParams[key];
       });
 
@@ -209,23 +204,29 @@ GallerySchema.statics = {
   },
 
   /**
-   * EditGalleryById - edit the gallery matching the id
+   * AddGalleryImagesByGalleryId
    *
    * @param {String} id
-   * @return {Object}
+   * @return {Array}
    * @api public
    */
-  addGalleryImageByGalleryId: function(id, galleryParams) {
+  addGalleryImagesByGalleryId: function(id, images) {
 
-    if(!id) throw new Error('Gallery.editGalleryById: id parameter is mandatory');
+    if(!id) throw new Error('Gallery.addGalleryImagesByGalleryId: id parameter is mandatory');
+    if(!images) throw new Error('Gallery.addGalleryImagesByGalleryId: images parameter is mandatory');
     const Gallery = mongoose.model('Gallery');
     const defer = Q.defer();
 
     function save(gallery) {
 
-      Object.keys(galleryParams).forEach(function (key, index) {
-        if(key==='_images') return; // handle this in a dedicated function
-        gallery[key] = galleryParams[key];
+      const starterOrder = gallery._images.length;
+
+      images.forEach(function(image, index) {
+        if(!image._id) defer.reject(new Error('Gallery.addGalleryImagesByGalleryId: image._id doesn\'t exist'));
+        gallery._images.push({
+          ref: image._id,
+          order: starterOrder + index
+        });
       });
 
       gallery.save(function(err) {
@@ -253,10 +254,18 @@ GallerySchema.statics = {
     if(!id) throw new Error('Gallery.deleteGalleryById: id parameter is mandatory');
     const Gallery = mongoose.model('Gallery');
     const defer = Q.defer();
-    Gallery.remove({_id: id}, function(err, result) {
-      if (err) return defer.reject(err);
-      return defer.resolve(result);
-    });
+
+    Gallery.getGalleryById(id)
+      .then(function(gallery) {
+        gallery.deleteImages()
+          .then(function (){
+            Gallery.remove({_id: gallery._id}, function(err, result) {
+              if (err) return defer.reject(err);
+              return defer.resolve(result);
+            });
+          });
+      });
+
     return defer.promise;
   },
 
@@ -279,35 +288,6 @@ GallerySchema.statics = {
 GallerySchema.methods = {
 
   /**
-   * LoadImagePreview
-   *
-   * @return {Boolean|Object}
-   * @api public
-   */
-  loadImagePreview: function() {
-    const File = mongoose.model('File');
-    const defer = Q.defer();
-    const self = this;
-
-    if(this._images.length === 0) {
-      // Return false if no image into the gallery yet
-      defer.resolve(false);
-    } else {
-      // Order images
-      bubblesort(this._images, function(a, b) { return a.order - b.order; });
-
-      File.getFileById(this._images[0].ref)
-        .then(function(image) {
-          self._image_preview = image.url;
-          defer.resolve(image);
-        })
-        .catch(defer.reject);
-    }
-
-    return defer.promise;
-  },
-
-  /**
    * LoadImages - loadImages from _images
    *
    * @return {Array}
@@ -316,19 +296,68 @@ GallerySchema.methods = {
   loadImages: function() {
     const File = mongoose.model('File');
     const defer = Q.defer();
+    const thisGallery = this;
 
     // Order images
     bubblesort(this._images, function(a, b) { return a.order - b.order; });
 
     async.map(this._images, function(_image, cb) {
-      File.getImageById(_image.ref)
+      File.getFileById(_image.ref)
         .then(function(image) {
           cb(null, image);
         })
         .catch(cb); // cb(err)
     }, function(err, images) {
       if(err) return defer.reject(err);
-      defer.resolve(images)
+
+      const loadedImages = [];
+      const loadedImageRefs = [];
+
+      images.forEach(function(image, index) {
+        if(image) {
+          loadedImages.push(image);
+          loadedImageRefs.push({ref: image._id, order: index})
+        }
+      });
+
+      thisGallery.images = loadedImages;
+
+      if(thisGallery.images.length > 0) {
+        thisGallery._image_preview = thisGallery.images[0].url;
+      }
+
+      if(loadedImageRefs.length === thisGallery._images.length) {
+        return defer.resolve(thisGallery.images);
+      }
+
+      thisGallery._images = loadedImageRefs;
+      thisGallery.save(function(err) {
+        if(err) return defer.reject(err);
+        defer.resolve(thisGallery.images);
+      });
+
+    });
+
+    return defer.promise;
+  },
+
+  /**
+   * DeleteImages - deleteImages from files collection
+   *
+   * @return void
+   * @api public
+   */
+  deleteImages: function() {
+    const File = mongoose.model('File');
+    const defer = Q.defer();
+
+    async.each(this._images, function(_image, cb) {
+      File.deleteFileById(_image.ref)
+        .then(cb.bind(null, null))
+        .catch(cb); // cb(err)
+    }, function(err) {
+      if(err) return defer.reject(err);
+      defer.resolve()
     });
     return defer.promise;
   },

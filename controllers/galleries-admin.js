@@ -4,11 +4,12 @@
 const config = require('clever-core').loadConfig();
 const mongoose = require('mongoose');
 const Gallery = mongoose.model('Gallery');
+const File = mongoose.model('File');
 const async = require('async');
 const util = require('../util');
 
 // Show gallery list
-  exports.showGalleries = function(GalleriesPackage, req, res, next) {
+exports.showGalleries = function(GalleriesPackage, req, res, next) {
   let page = Number.parseInt(req.query.page);
   page = Number.isNaN(page) ? 0 : page;
   const skip = page * 10;
@@ -34,7 +35,7 @@ const util = require('../util');
       Gallery.getGalleries(skip, 10)
         .then(function(galleries) {
           async.each(galleries, function(gallery, done) {
-            gallery.loadImagePreview()
+            gallery.loadImages()
               .then(function() {
                 done();
               })
@@ -61,17 +62,23 @@ const util = require('../util');
 };
 
 exports.showGallery = function(GalleriesPackage, req, res, next) {
-  function render(galleryToShow) {
+
+  function render(galleryToShow, images) {
     res.send(GalleriesPackage.render('admin/gallery/details', {
       packages: GalleriesPackage.getCleverCore().getInstance().exportablePkgList,
       user: req.user,
       galleryToShow: galleryToShow,
+      images: images,
       csrfToken: req.csrfToken()
     }));
   }
 
   Gallery.getGalleryById(req.params.id)
-    .then(render)
+    .then(function(galleryToShow) {
+      galleryToShow.loadImages()
+        .then(render.bind(null, galleryToShow))
+        .catch(util.passNext.bind(null, next))
+    })
     .catch(util.passNext.bind(null, next));
 };
 
@@ -94,6 +101,38 @@ exports.editGallery = function(GalleriesPackage, req, res, next) {
   }
 
   Gallery.getGalleryById(req.params.id)
+    .then(render)
+    .catch(util.passNext.bind(null, next));
+};
+
+exports.showImageGallery = function(FilePackage, req, res, next) {
+  function render(imageToShow) {
+    res.send(FilePackage.render('admin/image/details', {
+      packages: FilePackage.getCleverCore().getInstance().exportablePkgList,
+      user: req.user,
+      gallery: {_id: req.params.galleryId},
+      imageToShow: imageToShow,
+      csrfToken: req.csrfToken()
+    }));
+  }
+
+  File.getFileById(req.params.imageId)
+    .then(render)
+    .catch(util.passNext.bind(null, next));
+};
+
+exports.editImageGallery = function(FilePackage, req, res, next) {
+  function render(imageToEdit) {
+    res.send(FilePackage.render(`admin/image/edit`, {
+      packages: FilePackage.getCleverCore().getInstance().exportablePkgList,
+      user: req.user,
+      gallery: {_id: req.params.galleryId},
+      imageToEdit: imageToEdit,
+      csrfToken: req.csrfToken()
+    }));
+  }
+
+  File.getFileById(req.params.imageId)
     .then(render)
     .catch(util.passNext.bind(null, next));
 };

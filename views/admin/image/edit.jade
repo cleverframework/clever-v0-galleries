@@ -1,22 +1,22 @@
-extends ../../../system/views/admin/layout/admin
+extends ../../../../system/views/admin/layout/admin
 
 block content
   h1.page-header
-    | Files: 
-    span(style="color: #666") #{fileToEdit.title} [Details]
+    | Images: 
+    span(style="color: #666") #{imageToEdit.title} [Edit]
     div.row.placeholders
-  form#editFile.col-sm-8(method="PUT", action="/api/files/#{fileToEdit._id}", autocomplete="off")
+  form#editImage.col-sm-8(method="PUT", action="/api/files/#{imageToEdit._id}", autocomplete="off")
     .form-group
       label(for="inputTitle") Title
       |     
-      input#inputTitle.form-control(type="text", name="title", value="#{fileToEdit.title}", placeholder="Title")
+      input#inputTitle.form-control(type="text", name="title", value="#{imageToEdit.title}", placeholder="Title")
     .form-group
       label(for="inputDescription") Description
       |     
-      textarea#inputDescription.form-control(name="description", placeholder="Write a description here if you fancy") #{fileToEdit.description}
+      textarea#inputDescription.form-control(name="description", placeholder="Write a description here if you fancy") #{imageToEdit.description}
     .checkbox
       label
-        if fileToEdit.private
+        if imageToEdit.private
           input(type="checkbox", name="private", value="1", checked)
         else 
           input(type="checkbox", name="private", value="1")
@@ -24,10 +24,10 @@ block content
     input(type="hidden", name="_csrf", value="#{csrfToken}")
     |   
     a.btn.btn-default(href="/admin/files", style="margin-right: 5px;") Cancel
-    button#editFileBtn.btn.btn-success(type="submit") Save
+    button#editImageBtn.btn.btn-success(type="submit") Save
     br
     br
-    div#editFileError(class="alert alert-danger hidden", role="alert")
+    div#editImageError(class="alert alert-danger hidden", role="alert")
       b
         |	Ops! 
       span.message
@@ -36,9 +36,10 @@ block content
 block appendjs
   script.
     window.csrf = '#{csrfToken}';
-    window.urlreload = '/admin/files';
+    window.galleryId = '#{gallery._id}';
+    window.urlreload = '/admin/galleries/#{gallery._id}/images/#{imageToEdit._id}';
   script(src="/public/files/vendor/jquery-ui/jquery-ui.min.js")
   script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.iframe-transport.js")
   script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.fileupload.js")
   script(src="/public/files/vendor/cropper/dist/cropper.min.js")
-  script(src="/public/files/admin/index.js")
+  script(src="/public/galleries/admin/index.js")

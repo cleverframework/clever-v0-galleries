@@ -1,45 +1,45 @@
-extends ../../../system/views/admin/layout/admin
+extends ../../../../system/views/admin/layout/admin
 
 block content
   h1.page-header
-    | Files: 
-    span(style="color: #666") #{fileToShow.title} [Details]
+    | Images: 
+    span(style="color: #666") #{imageToShow.title} [Details]
     div.row.placeholders
   form#editFile.col-sm-8(autocomplete="off")
     .form-group
       label(for="inputTitle") Title
       |     
-      input#inputTitle.form-control(type="text", name="title", value="#{fileToShow.title}", placeholder="Title", disabled)
+      input#inputTitle.form-control(type="text", name="title", value="#{imageToShow.title}", placeholder="Title", disabled)
     .form-group
       label(for="inputDescription") Description
       |     
-      textarea#inputDescription.form-control(name="description", placeholder="", disabled) #{fileToShow.description}
+      textarea#inputDescription.form-control(name="description", placeholder="", disabled) #{imageToShow.description}
     | 
     .form-group
       label(for="inputTitle") Size (bytes)
       |     
-      input#inputTitle.form-control(type="text", name="size", value="#{fileToShow.size}", placeholder="Size", disabled)  
+      input#inputTitle.form-control(type="text", name="size", value="#{imageToShow.size}", placeholder="Size", disabled)  
     .form-group
       label(for="inputTitle") Type
       |     
-      input#inputTitle.form-control(type="text", name="mimetype", value="#{fileToShow.mimetype}", placeholder="Mimetype", disabled)  
+      input#inputTitle.form-control(type="text", name="mimetype", value="#{imageToShow.mimetype}", placeholder="Mimetype", disabled)  
     .form-group
       label(for="inputTitle") Created
       |     
-      input#inputTitle.form-control(type="text", name="created", value="#{fileToShow.created}", placeholder="Created", disabled)  
+      input#inputTitle.form-control(type="text", name="created", value="#{imageToShow.created}", placeholder="Created", disabled)  
     .form-group
       label(for="inputTitle") Modified
       |     
-      input#inputTitle.form-control(type="text", name="modified", value="#{fileToShow.created}", placeholder="Modified", disabled)  
+      input#inputTitle.form-control(type="text", name="modified", value="#{imageToShow.created}", placeholder="Modified", disabled)  
     .checkbox
       label
-        if fileToShow.private
+        if imageToShow.private
           input(type="checkbox", name="private", value="1", checked, disabled)
         else 
           input(type="checkbox", name="private", value="1", disabled)
         |  Private
       
-    a.btn.btn-default(href="/admin/files", style="margin-right: 5px;") &laquo;
+    a.btn.btn-default(href="/admin/galleries", style="margin-right: 5px;") &laquo;
     .btn-group
         button.btn.btn-info.dropdown-toggle(type="button", data-toggle="dropdown", aria-expanded="false")
           | Modify 
@@ -47,17 +47,17 @@ block content
         |   
         ul.dropdown-menu(role="menu")
           li
-            a(href="/admin/files/#{fileToShow._id}/edit") Edit
+            a(href="/admin/galleries/#{gallery._id}/images/#{imageToShow._id}/edit") Edit
           | 
           li
-            a.deleteFile(href="#", data-id="#{fileToShow._id}") Delete
+            a.deleteImage(href="#", data-id="#{imageToShow._id}") Delete
 
 block appendjs
   script.
     window.csrf = '#{csrfToken}';
-    window.urlreload = '/admin/files';
+    window.urlreload = '/admin/galleries/#{gallery._id}';
   script(src="/public/files/vendor/jquery-ui/jquery-ui.min.js")
   script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.iframe-transport.js")
   script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.fileupload.js")
   script(src="/public/files/vendor/cropper/dist/cropper.min.js")
-  script(src="/public/files/admin/index.js")
+  script(src="/public/galleries/admin/index.js")

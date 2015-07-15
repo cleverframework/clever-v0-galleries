@@ -8,24 +8,24 @@ block appendcss
 block content
   h1.page-header
     | Galleries: 
-    span(style="color: #666") Create
+    span(style="color: #666") #{galleryToEdit.title} [Edit]
     div.row.placeholders
-  form#createGallery.col-sm-8(method="POST", action="/api/galleries", autocomplete="off")
+  form#editGallery.col-sm-8(method="PUT", action="/api/galleries/#{galleryToEdit._id}", autocomplete="off")
     .form-group
       label(for="inputTitle") Title
-      input#inputTitle.form-control(type="text", name="title", value="", placeholder="Title (max 32 characters)", maxlength="32")
+      input#inputTitle.form-control(type="text", name="title", value="#{galleryToEdit.title}", placeholder="Title (max 32 characters)", maxlength="32")
     .form-group
       label(for="inputSlug") Slug
-      input#inputSlug.form-control(type="text", name="slug", value="", placeholder="Slug (max 32 characters)", maxlength="32")
+      input#inputSlug.form-control(type="text", name="slug", value="#{galleryToEdit.slug}", placeholder="Slug (max 32 characters)", maxlength="32")
     .form-group
       label(for="inputComment") Comment 
-      input#inputComment.form-control(type="text", name="comment", value="", placeholder="Comment (max 64 characters)", maxlength="128")
+      input#inputComment.form-control(type="text", name="comment", value="#{galleryToEdit.comment}", placeholder="Comment (max 64 characters)", maxlength="128")
     input(type="hidden", name="_csrf", value="#{csrfToken}")
     a.btn.btn-default(href="/admin/galleries", style="margin-right: 5px;") Cancel
-    button#createGalleryBtn.btn.btn-success(type="submit") Create
+    button#editGalleryBtn.btn.btn-success(type="submit") Edit
     br
     br
-    div#createGalleryError(class="alert alert-danger hidden", role="alert")
+    div#editGalleryError(class="alert alert-danger hidden", role="alert")
       b
         |	Ops! 
       span.message
@@ -34,6 +34,8 @@ block content
 block appendjs
   script.
     window.urlreload = -1;
+    window.galleryId = '#{galleryToEdit._id}'
+    window.csrf = '#{csrfToken}';
   script(src="/public/files/vendor/jquery-ui/jquery-ui.min.js")
   script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.iframe-transport.js")
   script(src="/public/files/vendor/blueimp-file-upload-node/js/jquery.fileupload.js")
