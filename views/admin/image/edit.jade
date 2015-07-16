@@ -23,7 +23,7 @@ block content
         |  Private
     input(type="hidden", name="_csrf", value="#{csrfToken}")
     |   
-    a.btn.btn-default(href="/admin/files", style="margin-right: 5px;") Cancel
+    a.btn.btn-default(href="/admin/galleries/#{gallery._id}/images/#{imageToEdit._id}", style="margin-right: 5px;") Cancel
     button#editImageBtn.btn.btn-success(type="submit") Save
     br
     br
