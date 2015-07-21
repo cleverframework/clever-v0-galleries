@@ -21,7 +21,7 @@ block content
       label(for="inputComment") Comment 
       input#inputComment.form-control(type="text", name="comment", value="#{galleryToEdit.comment}", placeholder="Comment (max 64 characters)", maxlength="128")
     input(type="hidden", name="_csrf", value="#{csrfToken}")
-    a.btn.btn-default(href="/admin/galleries", style="margin-right: 5px;") Cancel
+    a.btn.btn-default(href="/admin/galleries/#{galleryToEdit._id}", style="margin-right: 5px;") Cancel
     button#editGalleryBtn.btn.btn-success(type="submit") Edit
     br
     br
