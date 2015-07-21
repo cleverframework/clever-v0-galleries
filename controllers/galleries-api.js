@@ -8,11 +8,6 @@ const config = require('clever-core').loadConfig();
 const request = require('request');
 const util = require('../util');
 
-// Send logged gallery
-exports.me = function(req, res) {
-  util.sendObjectAsHttpResponse(res, 200, req.gallery || null);
-};
-
 // Find all gallery
 exports.getGalleries = function(req, res, next) {
   Gallery.getGalleries(req.query.start, req.query.limit)
@@ -30,8 +25,8 @@ exports.getGallery = function(req, res, next) {
 // Create gallery
 exports.createGallery = function(req, res, next) {
 
-  req.assert('title', 'Gallery must have a title of not more then 32 characters').notEmpty().len(1, 32);
-  req.assert('slug', 'Gallery must have a slug of not more then 32 characters').notEmpty().len(1, 32);
+  req.assert('title', 'Gallery must have a title of not more than 32 characters').notEmpty().len(1, 32);
+  req.assert('slug', 'Gallery must have a slug of not more than 32 characters').notEmpty().len(1, 32);
   req.assert('comment', 'Comment must have max 64 characters').optional().len(0, 64);
 
   const errors = req.validationErrors();
@@ -42,13 +37,14 @@ exports.createGallery = function(req, res, next) {
   Gallery.createGallery(req.body)
     .then(util.sendObjectAsHttpResponse.bind(null, res, 201))
     .catch(util.sendObjectAsHttpResponse.bind(null, res, 400));
+
 };
 
 // Edit gallery logged gallery id
 exports.editGallery = function(req, res, next) {
 
-  req.assert('title', 'Gallery must have a title of not more then 32 characters').notEmpty().len(1, 32);
-  req.assert('slug', 'Gallery must have a slug of not more then 32 characters').notEmpty().len(1, 32);
+  req.assert('title', 'Gallery must have a title of not more than 32 characters').notEmpty().len(1, 32);
+  req.assert('slug', 'Gallery must have a slug of not more than 32 characters').notEmpty().len(1, 32);
   req.assert('comment', 'Comment must have max 64 characters').optional().len(0, 64);
 
   const errors = req.validationErrors();

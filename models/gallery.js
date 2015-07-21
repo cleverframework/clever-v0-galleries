@@ -153,6 +153,31 @@ GallerySchema.statics = {
   },
 
   /**
+   * GetGalleryList - return the list of galleries
+   *
+   * @return {Object}
+   * @api public
+   */
+  getGalleryList: function() {
+    const Gallery = mongoose.model('Gallery');
+    const defer = Q.defer();
+    Gallery.find({}, {}, {}, function(err, galleries) {
+      if (err) return defer.reject(err);
+      async.map(galleries, function(gallery, cb) {
+        const listElement = {};
+        listElement._id = gallery._id;
+        listElement.title = gallery.title;
+        cb(null, listElement);
+      }, function(errors, galleryList) {
+        if(errors) return defer.reject(errors);
+        defer.resolve(galleryList);
+      });
+
+    }).sort({ title: -1 });
+    return defer.promise;
+  },
+
+  /**
    * GetGalleryById - return the gallery matching the id
    *
    * @param {String} id
