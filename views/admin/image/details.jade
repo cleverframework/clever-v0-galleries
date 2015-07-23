@@ -24,13 +24,13 @@ block content
       |     
       input#inputTitle.form-control(type="text", name="mimetype", value="#{imageToShow.mimetype}", placeholder="Mimetype", disabled)  
     .form-group
-      label(for="inputTitle") Created
+      label(for="inputCreated") Created
       |     
-      input#inputTitle.form-control(type="text", name="created", value="#{imageToShow.created}", placeholder="Created", disabled)  
+      input#inputCreated.form-control(type="text", name="created", value="#{imageToShow.created_format} (#{imageToShow.created_ago})", placeholder="Created", disabled)  
     .form-group
-      label(for="inputTitle") Modified
+      label(for="inputModified") Modified
       |     
-      input#inputTitle.form-control(type="text", name="modified", value="#{imageToShow.created}", placeholder="Modified", disabled)  
+      input#inputModified.form-control(type="text", name="modified", value="#{imageToShow.modified_format|| 'Never'} #{imageToShow.modified_format ? '(' + imageToShow.modified_ago + ')' : ''}", placeholder="Modified", disabled)  
     .checkbox
       label
         if imageToShow.private
