@@ -143,7 +143,7 @@ GallerySchema.statics = {
    */
   getGalleries: function(skip, limit) {
     const Gallery = mongoose.model('Gallery');
-    const options = skip && limit ? {skip: skip, limit: limit} : {};
+    const options = skip && limit ? {skip: skip, limit: limit} : {skip: 0, limit: 10};
     const defer = Q.defer();
     Gallery.find({}, {}, options, function(err, galleries) {
       if (err) return defer.reject(err);
