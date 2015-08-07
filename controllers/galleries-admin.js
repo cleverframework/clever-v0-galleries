@@ -63,22 +63,23 @@ exports.showGalleries = function(GalleriesPackage, req, res, next) {
 
 exports.showGallery = function(GalleriesPackage, req, res, next) {
 
-  function render(galleryToShow, images) {
+  function render(galleryToShow) {
     res.send(GalleriesPackage.render('admin/gallery/details', {
       packages: GalleriesPackage.getCleverCore().getInstance().exportablePkgList,
       user: req.user,
       galleryToShow: galleryToShow,
-      images: images,
+      images: galleryToShow.images,
       csrfToken: req.csrfToken()
     }));
   }
 
+  function loadGalleryImages(gallery) {
+    return gallery.loadImages()
+  }
+
   Gallery.getGalleryById(req.params.id)
-    .then(function(galleryToShow) {
-      galleryToShow.loadImages()
-        .then(render.bind(null, galleryToShow))
-        .catch(util.passNext.bind(null, next))
-    })
+    .then(loadGalleryImages)
+    .then(render)
     .catch(util.passNext.bind(null, next));
 };
 

@@ -352,13 +352,13 @@ GallerySchema.methods = {
       }
 
       if(loadedImageRefs.length === thisGallery._images.length) {
-        return defer.resolve(thisGallery.images);
+        return defer.resolve(thisGallery);
       }
 
       thisGallery._images = loadedImageRefs;
       thisGallery.save(function(err) {
         if(err) return defer.reject(err);
-        defer.resolve(thisGallery.images);
+        defer.resolve(thisGallery);
       });
 
     });
