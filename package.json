@@ -18,7 +18,7 @@
   "visible": true,
   "dependencies": {
     "bubble-sort-js": "0.0.2",
-    "file-uploader-sdk": "git+ssh://git@github.com/JacopoDaeli/file-uploader-sdk.git",
+    "file-uploader-sdk": "0.0.1",
     "request": "^2.58.0"
   },
   "devDependencies": {
